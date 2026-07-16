@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace CodexUsageCompanion.Protocol;
 
 public sealed class CodexAppServerProtocolSession : ICodexAppServerSession
@@ -19,7 +21,7 @@ public sealed class CodexAppServerProtocolSession : ICodexAppServerSession
         }
     }
 
-    public event EventHandler? RateLimitsUpdated;
+    public event EventHandler<string>? RateLimitsUpdated;
 
     public event EventHandler<string?>? AccountUpdated;
 
@@ -97,7 +99,10 @@ public sealed class CodexAppServerProtocolSession : ICodexAppServerSession
                 "account/rateLimits/updated",
                 StringComparison.Ordinal))
         {
-            RateLimitsUpdated?.Invoke(this, EventArgs.Empty);
+            if (notification.Params is JsonElement parameters)
+            {
+                RateLimitsUpdated?.Invoke(this, parameters.GetRawText());
+            }
         }
         else if (string.Equals(notification.Method, "account/updated", StringComparison.Ordinal))
         {

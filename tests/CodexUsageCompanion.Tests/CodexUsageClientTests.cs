@@ -29,7 +29,7 @@ public sealed class CodexUsageClientTests
     }
 
     [Fact]
-    public async Task RateLimitNotification_RefetchesCompleteSnapshot()
+    public async Task RateLimitNotification_UpdatesSnapshotWithoutRefetching()
     {
         var session = new FakeSession();
         await using var client = new CodexUsageClient(session, new FixedClock(Now), TimeSpan.FromHours(1));
@@ -43,14 +43,16 @@ public sealed class CodexUsageClientTests
             }
         };
 
-        session.RateLimitsJson = FakeSession.RateLimitsJsonFor(usedPercent: 60);
-        session.NotifyRateLimitsUpdated();
+        session.NotifyRateLimitsUpdated(FakeSession.RateLimitsNotificationJsonFor(usedPercent: 60));
         UsageSnapshot result = await refreshed.Task.WaitAsync(
             TimeSpan.FromSeconds(2),
             TestContext.Current.CancellationToken);
 
-        Assert.Equal(2, session.RateLimitReads);
+        Assert.Equal(1, session.AccountReads);
+        Assert.Equal(1, session.RateLimitReads);
+        Assert.Equal("Plus", result.PlanLabel);
         Assert.Equal(40, result.RemainingPercent);
+        Assert.Equal(1, result.AvailableResetCount);
     }
 
     [Fact]
@@ -116,7 +118,7 @@ public sealed class CodexUsageClientTests
 
     private sealed class FakeSession : ICodexAppServerSession
     {
-        public event EventHandler? RateLimitsUpdated;
+        public event EventHandler<string>? RateLimitsUpdated;
 
         public event EventHandler<string?>? AccountUpdated;
 
@@ -148,7 +150,8 @@ public sealed class CodexUsageClientTests
             return Task.FromResult(RateLimitsJson);
         }
 
-        public void NotifyRateLimitsUpdated() => RateLimitsUpdated?.Invoke(this, EventArgs.Empty);
+        public void NotifyRateLimitsUpdated(string notificationJson) =>
+            RateLimitsUpdated?.Invoke(this, notificationJson);
 
         public void NotifyAccountUpdated(string? planType) => AccountUpdated?.Invoke(this, planType);
 
@@ -166,6 +169,22 @@ public sealed class CodexUsageClientTests
                 }
               },
               "rateLimitResetCredits": {"availableCount": 1}
+            }
+            """;
+
+        public static string RateLimitsNotificationJsonFor(
+            double usedPercent,
+            string? planType = null) => $$"""
+            {
+              "rateLimits": {
+                "planType": {{(planType is null ? "null" : $"\"{planType}\"")}},
+                "primary": null,
+                "secondary": {
+                  "usedPercent": {{usedPercent}},
+                  "resetsAt": {{Now.AddDays(7).ToUnixTimeSeconds()}},
+                  "windowDurationMins": 10080
+                }
+              }
             }
             """;
     }

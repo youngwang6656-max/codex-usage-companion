@@ -18,7 +18,7 @@ public sealed class StdioCodexAppServerSession : ICodexAppServerSession
             : throw new ArgumentException("A Codex executable path is required.", nameof(codexExecutablePath));
     }
 
-    public event EventHandler? RateLimitsUpdated;
+    public event EventHandler<string>? RateLimitsUpdated;
 
     public event EventHandler<string?>? AccountUpdated;
 
@@ -169,8 +169,8 @@ public sealed class StdioCodexAppServerSession : ICodexAppServerSession
         }
     }
 
-    private void OnRateLimitsUpdated(object? sender, EventArgs eventArgs) =>
-        RateLimitsUpdated?.Invoke(this, EventArgs.Empty);
+    private void OnRateLimitsUpdated(object? sender, string notificationJson) =>
+        RateLimitsUpdated?.Invoke(this, notificationJson);
 
     private void OnAccountUpdated(object? sender, string? planType) =>
         AccountUpdated?.Invoke(this, planType);
