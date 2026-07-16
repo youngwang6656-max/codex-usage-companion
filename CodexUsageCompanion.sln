@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodexUsageCompanion.Core", "src\CodexUsageCompanion.Core\CodexUsageCompanion.Core.csproj", "{75A760C4-4CE2-46FB-9948-1B42BA05B6CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodexUsageCompanion.Tests", "tests\CodexUsageCompanion.Tests\CodexUsageCompanion.Tests.csproj", "{EAAEE334-7686-4F67-A314-4F4333829711}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodexUsageCompanion", "src\CodexUsageCompanion\CodexUsageCompanion.csproj", "{5C9F2413-EC5C-4BB0-9C0B-C15EC7B00B94}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{75A760C4-4CE2-46FB-9948-1B42BA05B6CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75A760C4-4CE2-46FB-9948-1B42BA05B6CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75A760C4-4CE2-46FB-9948-1B42BA05B6CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75A760C4-4CE2-46FB-9948-1B42BA05B6CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAAEE334-7686-4F67-A314-4F4333829711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAAEE334-7686-4F67-A314-4F4333829711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAAEE334-7686-4F67-A314-4F4333829711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAAEE334-7686-4F67-A314-4F4333829711}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C9F2413-EC5C-4BB0-9C0B-C15EC7B00B94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C9F2413-EC5C-4BB0-9C0B-C15EC7B00B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C9F2413-EC5C-4BB0-9C0B-C15EC7B00B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C9F2413-EC5C-4BB0-9C0B-C15EC7B00B94}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
