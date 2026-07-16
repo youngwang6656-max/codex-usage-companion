@@ -57,13 +57,21 @@ public sealed class CodexAppServerProtocolSessionTests
         var connection = new FakeConnection();
         await using var session = new CodexAppServerProtocolSession(connection);
         int notifications = 0;
-        session.RateLimitsUpdated += (_, _) => notifications++;
+        string? notificationJson = null;
+        session.RateLimitsUpdated += (_, json) =>
+        {
+            notifications++;
+            notificationJson = json;
+        };
         await session.StartAsync(TestContext.Current.CancellationToken);
 
         connection.Notify("thread/started");
-        connection.Notify("account/rateLimits/updated");
+        connection.Notify(
+            "account/rateLimits/updated",
+            """{"rateLimits":{"planType":"plus"}}""");
 
         Assert.Equal(1, notifications);
+        Assert.Equal("""{"rateLimits":{"planType":"plus"}}""", notificationJson);
     }
 
     [Fact]

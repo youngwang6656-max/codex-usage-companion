@@ -131,13 +131,49 @@ public sealed class CodexUsageClient : ICodexUsageClient
         }
     }
 
-    private async void OnRateLimitsUpdated(object? sender, EventArgs eventArgs)
+    private async void OnRateLimitsUpdated(object? sender, string notificationJson)
     {
         try
         {
-            await RefreshAsync(_lifetime.Token).ConfigureAwait(false);
+            await _refreshLock.WaitAsync(_lifetime.Token).ConfigureAwait(false);
+            try
+            {
+                RateLimitsResult limits = CodexProtocolParser.ParseRateLimits(notificationJson);
+                bool hasUpdate = limits.Windows.Count > 0
+                    || limits.AvailableResetCount.HasValue
+                    || !string.IsNullOrWhiteSpace(limits.PlanType);
+                if (!hasUpdate)
+                {
+                    return;
+                }
+
+                UsageSnapshot current = CurrentSnapshot;
+                UsageSnapshot projected = UsageProjection.Create(
+                    limits.PlanType ?? _notifiedPlanType,
+                    limits.Windows,
+                    limits.AvailableResetCount,
+                    _clock.Now);
+                UsageSnapshot merged = projected with
+                {
+                    PlanLabel = projected.PlanLabel ?? current.PlanLabel,
+                    RemainingPercent = projected.RemainingPercent ?? current.RemainingPercent,
+                    ResetsAt = projected.ResetsAt ?? current.ResetsAt,
+                    AvailableResetCount = projected.AvailableResetCount
+                        ?? current.AvailableResetCount,
+                };
+
+                _hasSuccessfulSnapshot = true;
+                Publish(merged);
+            }
+            finally
+            {
+                _refreshLock.Release();
+            }
         }
         catch (OperationCanceledException)
+        {
+        }
+        catch (ProtocolException)
         {
         }
     }

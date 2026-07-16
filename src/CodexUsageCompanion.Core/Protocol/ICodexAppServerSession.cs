@@ -2,7 +2,7 @@ namespace CodexUsageCompanion.Protocol;
 
 public interface ICodexAppServerSession : IAsyncDisposable
 {
-    event EventHandler? RateLimitsUpdated;
+    event EventHandler<string>? RateLimitsUpdated;
 
     event EventHandler<string?>? AccountUpdated;
 
